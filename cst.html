@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>গ্রন্থাগার — Library Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --bg2: #eee8d8;
+    --surface: #ffffff;
+    --primary: #1a3a5c;
+    --accent: #c8973a;
+    --accent2: #e8b84b;
+    --text: #1a1a1a;
+    --text2: #555;
+    --text3: #888;
+    --border: #d8cfc0;
+    --danger: #c0392b;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --shadow: 0 4px 24px rgba(26,58,92,0.10);
+    --shadow2: 0 8px 40px rgba(26,58,92,0.16);
+    --radius: 14px;
+    --sidebar-w: 260px;
+  }
+  [data-theme="dark"] {
+    --bg: #0f1923;
+    --bg2: #161f2b;
+    --surface: #1c2836;
+    --primary: #2a6496;
+    --accent: #e8b84b;
+    --accent2: #f5cc6a;
+    --text: #f0ece3;
+    --text2: #b0a898;
+    --text3: #7a7065;
+    --border: #2c3a4a;
+    --shadow: 0 4px 24px rgba(0,0,0,0.30);
+    --shadow2: 0 8px 40px rgba(0,0,0,0.40);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+  /* ===== NAV ===== */
+  #main-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--primary);
+    padding: 0 32px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700;
+    color: var(--accent2);
+    text-decoration: none;
+  }
+  .nav-brand i { font-size: 1.6rem; }
+  .nav-links {
+    display: flex; align-items: center; gap: 4px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.80);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.92rem; font-weight: 500;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .btn-login {
+    background: var(--accent);
+    color: #fff;
+    border: none; border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-login:hover { background: var(--accent2); transform: translateY(-1px); }
+  .theme-toggle {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; border-radius: 8px;
+    width: 38px; height: 38px;
+    cursor: pointer; font-size: 1rem;
+    transition: all 0.2s;
+  }
+  .theme-toggle:hover { background: rgba(255,255,255,0.22); }
+  .hamburger {
+    display: none;
+    background: none; border: none; color: #fff;
+    font-size: 1.4rem; cursor: pointer;
+  }
+
+  /* ===== PAGES ===== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== HOME PAGE ===== */
+  #home { padding-top: 64px; }
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #0d2235 60%, #1a3a5c 100%);
+    padding: 90px 32px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-content { max-width: 700px; position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(200,151,58,0.2);
+    border: 1px solid rgba(200,151,58,0.5);
+    color: var(--accent2);
+    padding: 5px 14px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 900; color: #fff;
+    line-height: 1.15; margin-bottom: 18px;
+  }
+  .hero h1 span { color: var(--accent2); }
+  .hero p { color: rgba(255,255,255,0.75); font-size: 1.05rem; line-height: 1.7; margin-bottom: 32px; max-width: 540px; }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 10px;
+    padding: 13px 28px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: all 0.25s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,151,58,0.4); }
+  .btn-outline {
+    background: transparent; color: #fff;
+    border: 2px solid rgba(255,255,255,0.4); border-radius: 10px;
+    padding: 11px 24px; font-size: 0.95rem; font-weight: 500;
+    cursor: pointer; transition: all 0.25s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+
+  .hero-stats {
+    display: flex; gap: 32px; flex-wrap: wrap;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .stat-item { color: #fff; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem; font-weight: 700;
+    color: var(--accent2); display: block;
+  }
+  .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+
+  /* Search Bar */
+  .search-section {
+    background: var(--surface);
+    padding: 32px;
+    box-shadow: var(--shadow);
+  }
+  .search-wrap {
+    max-width: 700px; margin: 0 auto;
+    display: flex; gap: 0;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .search-wrap:focus-within { border-color: var(--accent); }
+  .search-wrap input {
+    flex: 1; padding: 14px 20px;
+    background: transparent; border: none; outline: none;
+    font-size: 0.95rem; color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .search-wrap select {
+    background: var(--bg2); border: none; border-left: 2px solid var(--border);
+    padding: 0 16px; font-size: 0.88rem; color: var(--text2);
+    cursor: pointer; outline: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .search-wrap button {
+    background: var(--primary); color: #fff;
+    border: none; padding: 14px 24px;
+    cursor: pointer; font-size: 1rem;
+    transition: background 0.2s;
+  }
+  .search-wrap button:hover { background: var(--accent); }
+
+  /* Stats Cards */
+  .stats-section { padding: 56px 32px; }
+  .section-title {
+    text-align: center; margin-bottom: 40px;
+  }
+  .section-title h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  [data-theme="dark"] .section-title h2 { color: var(--accent2); }
+  .section-title p { color: var(--text3); font-size: 0.95rem; }
+  .section-divider {
+    width: 50px; height: 3px;
+    background: var(--accent);
+    border-radius: 2px; margin: 10px auto 0;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px; max-width: 1100px; margin: 0 auto;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    display: flex; align-items: center; gap: 18px;
+    box-shadow: var(--shadow);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow2); }
+  .stat-card-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+  .ic-blue { background: rgba(26,58,92,0.1); color: var(--primary); }
+  .ic-gold { background: rgba(200,151,58,0.12); color: var(--accent); }
+  .ic-green { background: rgba(39,174,96,0.1); color: var(--success); }
+  .ic-red { background: rgba(192,57,43,0.1); color: var(--danger); }
+  .stat-card-info h3 { font-size: 1.7rem; font-weight: 700; color: var(--text); line-height: 1; }
+  .stat-card-info p { font-size: 0.85rem; color: var(--text3); margin-top: 4px; }
+
+  /* Featured Books */
+  .featured-section { padding: 20px 32px 60px; }
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 22px; max-width: 1100px; margin: 0 auto;
+  }
+  .book-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+  }
+  .book-card:hover { transform: translateY(-6px); box-shadow: var(--shadow2); }
+  .book-cover {
+    height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; position: relative;
+  }
+  .book-cover .availability {
+    position: absolute; top: 10px; right: 10px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 0.72rem; font-weight: 600;
+  }
+  .avail-yes { background: rgba(39,174,96,0.15); color: var(--success); border: 1px solid rgba(39,174,96,0.3); }
+  .avail-no { background: rgba(192,57,43,0.12); color: var(--danger); border: 1px solid rgba(192,57,43,0.3); }
+  .book-info { padding: 16px; }
+  .book-info h4 { font-size: 0.92rem; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+  .book-info .author { font-size: 0.8rem; color: var(--text3); margin-bottom: 8px; }
+  .book-info .category-tag {
+    display: inline-block;
+    background: rgba(26,58,92,0.08); color: var(--primary);
+    padding: 2px 9px; border-radius: 20px; font-size: 0.74rem;
+    margin-bottom: 12px;
+  }
+  [data-theme="dark"] .book-info .category-tag { background: rgba(255,255,255,0.08); color: var(--accent2); }
+  .btn-issue {
+    width: 100%; padding: 8px;
+    background: var(--primary); color: #fff;
+    border: none; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .btn-issue:hover { background: var(--accent); }
+  .btn-issue:disabled { background: var(--text3); cursor: not-allowed; }
+
+  /* ===== BOOKS PAGE ===== */
+  #books-page { padding: 80px 32px 60px; }
+  .page-header {
+    background: linear-gradient(135deg, var(--primary), #0d2235);
+    color: #fff; padding: 48px 32px;
+    border-radius: var(--radius);
+    margin-bottom: 32px; position: relative; overflow: hidden;
+  }
+  .page-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 8px; }
+  .page-header p { opacity: 0.75; }
+  .filters-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: flex; gap: 12px; flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+  .filter-input {
+    flex: 1; min-width: 200px;
+    padding: 10px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem; color: var(--text);
+    outline: none; font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+  }
+  .filter-input:focus { border-color: var(--accent); }
+  .filter-select {
+    padding: 10px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem; color: var(--text);
+    cursor: pointer; outline: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+  }
+  .filter-select:focus { border-color: var(--accent); }
+
+  /* ===== DASHBOARD LAYOUT ===== */
+  .dashboard-layout {
+    display: flex; min-height: 100vh;
+    padding-top: 64px;
+  }
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--primary);
+    min-height: calc(100vh - 64px);
+    position: fixed; top: 64px; left: 0;
+    overflow-y: auto; z-index: 100;
+    transition: transform 0.3s;
+  }
+  .sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .sidebar-user {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .sidebar-avatar {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; color: #fff; font-weight: 700;
+  }
+  .sidebar-user-info h4 { color: #fff; font-size: 0.92rem; font-weight: 600; }
+  .sidebar-user-info p { color: rgba(255,255,255,0.55); font-size: 0.78rem; }
+  .sidebar-role-badge {
+    display: inline-block;
+    background: rgba(200,151,58,0.25);
+    color: var(--accent2); border: 1px solid rgba(200,151,58,0.4);
+    padding: 2px 9px; border-radius: 20px; font-size: 0.7rem;
+    margin-top: 6px; font-weight: 600;
+  }
+  .sidebar-nav { padding: 16px 12px; }
+  .sidebar-section-label {
+    color: rgba(255,255,255,0.35);
+    font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 8px 8px 6px; margin-top: 8px;
+  }
+  .sidebar-nav a {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px; border-radius: 10px;
+    color: rgba(255,255,255,0.70);
+    text-decoration: none; font-size: 0.88rem; font-weight: 500;
+    transition: all 0.2s; margin-bottom: 2px;
+  }
+  .sidebar-nav a:hover { background: rgba(255,255,255,0.10); color: #fff; }
+  .sidebar-nav a.active { background: var(--accent); color: #fff; }
+  .sidebar-nav a i { width: 18px; font-size: 0.95rem; }
+  .nav-badge {
+    margin-left: auto;
+    background: rgba(192,57,43,0.85); color: #fff;
+    padding: 1px 7px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+  }
+  .dash-content {
+    margin-left: var(--sidebar-w);
+    flex: 1; padding: 28px;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ===== DASHBOARD PANELS ===== */
+  .dash-panel { display: none; }
+  .dash-panel.active { display: block; }
+  .dash-top { margin-bottom: 28px; }
+  .dash-top h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; color: var(--text); margin-bottom: 4px;
+  }
+  .dash-top p { color: var(--text3); font-size: 0.9rem; }
+
+  .dash-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; margin-bottom: 28px;
+  }
+  .dash-stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    position: relative; overflow: hidden;
+  }
+  .dash-stat-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+  }
+  .dsc-blue::after { background: var(--primary); }
+  .dsc-gold::after { background: var(--accent); }
+  .dsc-green::after { background: var(--success); }
+  .dsc-red::after { background: var(--danger); }
+  .dsc-purple::after { background: #8e44ad; }
+  .dash-stat-card .dsc-val {
+    font-size: 2rem; font-weight: 700; color: var(--text);
+    font-family: 'Playfair Display', serif;
+  }
+  .dash-stat-card .dsc-lbl { font-size: 0.82rem; color: var(--text3); margin-top: 4px; }
+  .dash-stat-card .dsc-icon {
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem; opacity: 0.08;
+  }
+
+  /* Table */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden; margin-bottom: 24px;
+  }
+  .table-card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .table-card-header h3 { font-size: 1rem; font-weight: 600; color: var(--text); }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--bg2);
+    padding: 12px 16px;
+    font-size: 0.78rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text3); text-align: left;
+  }
+  td {
+    padding: 13px 16px;
+    font-size: 0.88rem; color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg2); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600;
+  }
+  .badge-success { background: rgba(39,174,96,0.12); color: var(--success); }
+  .badge-danger { background: rgba(192,57,43,0.12); color: var(--danger); }
+  .badge-warning { background: rgba(243,156,18,0.12); color: var(--warning); }
+  .badge-primary { background: rgba(26,58,92,0.1); color: var(--primary); }
+  [data-theme="dark"] .badge-primary { background: rgba(255,255,255,0.1); color: var(--accent2); }
+
+  .btn-sm {
+    padding: 5px 12px; border-radius: 6px;
+    font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .btn-edit { background: rgba(26,58,92,0.1); color: var(--primary); }
+  .btn-delete { background: rgba(192,57,43,0.1); color: var(--danger); }
+  .btn-green { background: rgba(39,174,96,0.1); color: var(--success); }
+  .btn-edit:hover { background: var(--primary); color: #fff; }
+  .btn-delete:hover { background: var(--danger); color: #fff; }
+  .btn-green:hover { background: var(--success); color: #fff; }
+
+  /* Form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 0.83rem; font-weight: 600; color: var(--text2); }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 11px 14px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    font-size: 0.9rem; color: var(--text);
+    outline: none; font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
+  .form-actions { display: flex; gap: 12px; margin-top: 8px; }
+  .btn-save {
+    background: var(--primary); color: #fff;
+    border: none; border-radius: 9px;
+    padding: 11px 24px; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-save:hover { background: var(--accent); }
+  .btn-cancel-form {
+    background: var(--bg2); color: var(--text2);
+    border: 1px solid var(--border); border-radius: 9px;
+    padding: 11px 20px; font-size: 0.9rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-cancel-form:hover { border-color: var(--text2); }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 36px;
+    width: 90%; max-width: 480px;
+    box-shadow: var(--shadow2);
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.92) translateY(16px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; margin-bottom: 6px; color: var(--text);
+  }
+  .modal p { color: var(--text3); font-size: 0.9rem; margin-bottom: 24px; }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: none; border: none; font-size: 1.2rem;
+    cursor: pointer; color: var(--text3);
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { background: var(--bg2); }
+  .modal { position: relative; }
+  .tabs {
+    display: flex; gap: 0;
+    background: var(--bg2); border-radius: 10px; padding: 4px;
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    flex: 1; padding: 9px;
+    border: none; border-radius: 8px; background: transparent;
+    font-size: 0.88rem; font-weight: 600; cursor: pointer;
+    color: var(--text3); transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow); }
+  [data-theme="dark"] .tab-btn.active { color: var(--accent2); }
+
+  /* ===== FINE CALCULATOR ===== */
+  .fine-calc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px; margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .fine-calc h3 { margin-bottom: 16px; font-size: 1rem; color: var(--text); }
+  .fine-result {
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-radius: 10px; padding: 16px;
+    margin-top: 16px; display: none;
+  }
+  .fine-result.show { display: block; }
+  .fine-result h4 { color: var(--danger); font-size: 1.2rem; }
+  .fine-result p { color: var(--text3); font-size: 0.85rem; margin-top: 4px; }
+
+  /* ===== NOTIFICATIONS ===== */
+  .notif-list { display: flex; flex-direction: column; gap: 12px; }
+  .notif-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex; align-items: flex-start; gap: 14px;
+    box-shadow: var(--shadow);
+  }
+  .notif-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .notif-content h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+  .notif-content p { font-size: 0.82rem; color: var(--text3); }
+  .notif-time { margin-left: auto; font-size: 0.75rem; color: var(--text3); white-space: nowrap; }
+
+  /* ===== CHARTS (CSS) ===== */
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow);
+  }
+  .chart-card h3 { font-size: 0.95rem; margin-bottom: 20px; color: var(--text); }
+  .bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 120px; }
+  .bar-group { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+  .bar {
+    width: 100%; background: var(--primary); border-radius: 6px 6px 0 0;
+    transition: opacity 0.2s;
+  }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { font-size: 0.7rem; color: var(--text3); }
+  .bar-val { font-size: 0.72rem; color: var(--text2); font-weight: 600; }
+  .donut-wrap { display: flex; gap: 20px; align-items: center; }
+  .donut { width: 100px; height: 100px; border-radius: 50%; flex-shrink: 0; }
+  .donut-legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text2); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ===== ABOUT / CONTACT ===== */
+  #about-page, #contact-page { padding: 80px 32px 60px; max-width: 860px; margin: 0 auto; }
+  .about-hero { text-align: center; padding: 48px 0 40px; }
+  .about-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: var(--primary); margin-bottom: 16px; }
+  [data-theme="dark"] .about-hero h1 { color: var(--accent2); }
+  .about-hero p { color: var(--text2); font-size: 1rem; line-height: 1.8; }
+  .feature-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+  .feature-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    display: flex; gap: 14px;
+    box-shadow: var(--shadow);
+  }
+  .feature-item i { font-size: 1.4rem; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+  .feature-item h4 { font-size: 0.92rem; margin-bottom: 4px; }
+  .feature-item p { font-size: 0.82rem; color: var(--text3); }
+
+  .contact-form {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+    background: var(--primary); color: #fff;
+    padding: 14px 22px; border-radius: 12px;
+    font-size: 0.9rem; font-weight: 500;
+    box-shadow: var(--shadow2);
+    transform: translateY(80px) scale(0.95);
+    opacity: 0; transition: all 0.3s;
+    display: flex; align-items: center; gap: 10px;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateY(0) scale(1); opacity: 1; }
+  #toast.success { background: var(--success); }
+  #toast.error { background: var(--danger); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .dash-content { margin-left: 0; }
+    .chart-row { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+  }
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hamburger { display: block; }
+    #main-nav { padding: 0 16px; }
+    .hero { padding: 60px 20px 50px; }
+    .stats-section, .featured-section { padding: 40px 16px; }
+    #books-page, #about-page, #contact-page { padding: 80px 16px 40px; }
+    .books-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .filters-bar { padding: 14px 16px; }
+    .hero-stats { gap: 20px; }
+    .feature-list { grid-template-columns: 1fr; }
+    .dash-content { padding: 16px; }
+    .dash-stats { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.5s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+
+  /* Color accents for book covers */
+  .c1 { background: linear-gradient(135deg,#1a3a5c,#2a6496); }
+  .c2 { background: linear-gradient(135deg,#7b2d8b,#b06fc2); }
+  .c3 { background: linear-gradient(135deg,#c0392b,#e74c3c); }
+  .c4 { background: linear-gradient(135deg,#16a085,#1abc9c); }
+  .c5 { background: linear-gradient(135deg,#d35400,#e67e22); }
+  .c6 { background: linear-gradient(135deg,#2c3e50,#4a6274); }
+  .c7 { background: linear-gradient(135deg,#27ae60,#2ecc71); }
+  .c8 { background: linear-gradient(135deg,#8e44ad,#9b59b6); }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="main-nav">
+  <a class="nav-brand" href="#" onclick="showPage('home')">
+    <i class="fas fa-book-open"></i>
+    গ্রন্থাগার
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" class="active" onclick="showPage('home'); setActive(this)">হোম</a></li>
+    <li><a href="#" onclick="showPage('books-page'); setActive(this)">বই সমূহ</a></li>
+    <li><a href="#" onclick="showPage('about-page'); setActive(this)">আমাদের সম্পর্কে</a></li>
+    <li><a href="#" onclick="showPage('contact-page'); setActive(this)">যোগাযোগ</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Dark/Light Mode">
+      <i class="fas fa-moon" id="theme-icon"></i>
+    </button>
+    <button class="btn-login" onclick="openModal('login-modal')">
+      <i class="fas fa-sign-in-alt"></i> লগইন
+    </button>
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="home" class="page active">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge fade-up"><i class="fas fa-star"></i> ডিজিটাল লাইব্রেরি সিস্টেম</div>
+      <h1 class="fade-up delay-1">আপনার <span>লাইব্রেরি</span> পরিচালনা করুন সহজেই</h1>
+      <p class="fade-up delay-2">স্কুল, কলেজ বা বিশ্ববিদ্যালয়ের লাইব্রেরির সমস্ত কার্যক্রম ডিজিটালভাবে পরিচালনা করুন — বই যোগ, ইস্যু, রিটার্ন এবং ফাইন ব্যবস্থাপনা এক জায়গায়।</p>
+      <div class="hero-btns fade-up delay-3">
+        <button class="btn-primary" onclick="openModal('login-modal')"><i class="fas fa-tachometer-alt"></i> ড্যাশবোর্ডে যান</button>
+        <button class="btn-outline" onclick="showPage('books-page'); setActiveByName('বই সমূহ')"><i class="fas fa-search"></i> বই খুঁজুন</button>
+      </div>
+      <div class="hero-stats fade-up delay-4">
+        <div class="stat-item">
+          <span class="stat-num" id="h-total-books">1,248</span>
+          <span class="stat-label">মোট বই</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" id="h-total-students">342</span>
+          <span class="stat-label">নিবন্ধিত শিক্ষার্থী</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" id="h-avail-books">986</span>
+          <span class="stat-label">উপলব্ধ বই</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">12</span>
+          <span class="stat-label">বিষয়শ্রেণী</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="search-section">
+    <div class="search-wrap" style="max-width:700px;margin:0 auto;">
+      <i class="fas fa-search" style="padding:0 0 0 18px;color:var(--text3);font-size:0.95rem;display:flex;align-items:center;"></i>
+      <input type="text" placeholder="বইয়ের নাম বা লেখকের নাম দিয়ে খুঁজুন..." id="home-search">
+      <select>
+        <option>সব বিষয়</option>
+        <option>বিজ্ঞান</option>
+        <option>গণিত</option>
+        <option>ইতিহাস</option>
+        <option>সাহিত্য</option>
+        <option>প্রযুক্তি</option>
+      </select>
+      <button onclick="showPage('books-page')"><i class="fas fa-search"></i></button>
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="section-title">
+      <h2>লাইব্রেরির পরিসংখ্যান</h2>
+      <p>বর্তমান অবস্থা এক নজরে</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="cards-grid">
+      <div class="stat-card fade-up">
+        <div class="stat-card-icon ic-blue"><i class="fas fa-books"></i></div>
+        <div class="stat-card-info"><h3>1,248</h3><p>মোট বই সংগ্রহ</p></div>
+      </div>
+      <div class="stat-card fade-up delay-1">
+        <div class="stat-card-icon ic-gold"><i class="fas fa-user-graduate"></i></div>
+        <div class="stat-card-info"><h3>342</h3><p>মোট শিক্ষার্থী</p></div>
+      </div>
+      <div class="stat-card fade-up delay-2">
+        <div class="stat-card-icon ic-green"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-card-info"><h3>986</h3><p>উপলব্ধ বই</p></div>
+      </div>
+      <div class="stat-card fade-up delay-3">
+        <div class="stat-card-icon ic-red"><i class="fas fa-hand-holding-heart"></i></div>
+        <div class="stat-card-info"><h3>262</h3><p>ইস্যু করা বই</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured-section">
+    <div class="section-title">
+      <h2>সম্প্রতি যোগ করা বই</h2>
+      <p>লাইব্রেরির নতুন সংযোজন</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="books-grid" id="featured-books"></div>
+  </section>
+</div>
+
+<!-- ===== BOOKS PAGE ===== -->
+<div id="books-page" class="page" style="padding-top:64px;">
+  <div style="padding:24px 32px 0;">
+    <div class="page-header">
+      <h1><i class="fas fa-book-open" style="margin-right:12px;"></i>সকল বই</h1>
+      <p>আমাদের লাইব্রেরির সম্পূর্ণ বই সংগ্রহ</p>
+    </div>
+    <div class="filters-bar">
+      <input type="text" class="filter-input" placeholder="🔍 বইয়ের নাম বা লেখক দিয়ে খুঁজুন..." id="book-search" oninput="filterBooks()">
+      <select class="filter-select" id="cat-filter" onchange="filterBooks()">
+        <option value="">সব বিষয়শ্রেণী</option>
+        <option>বিজ্ঞান</option>
+        <option>গণিত</option>
+        <option>ইতিহাস</option>
+        <option>সাহিত্য</option>
+        <option>প্রযুক্তি</option>
+        <option>ইসলামিক</option>
+      </select>
+      <select class="filter-select" id="avail-filter" onchange="filterBooks()">
+        <option value="">সব অবস্থা</option>
+        <option value="available">উপলব্ধ</option>
+        <option value="unavailable">অনুপলব্ধ</option>
+      </select>
+    </div>
+    <div class="books-grid" id="all-books-grid"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN DASHBOARD ===== -->
+<div id="admin-dashboard" class="page">
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">A</div>
+          <div class="sidebar-user-info">
+            <h4>আহমেদ হাসান</h4>
+            <p>admin@library.com</p>
+            <span class="sidebar-role-badge">Admin</span>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">প্রধান মেনু</div>
+        <a href="#" class="active" onclick="showDashPanel('dash-home',this)"><i class="fas fa-tachometer-alt"></i> ড্যাশবোর্ড</a>
+        <a href="#" onclick="showDashPanel('dash-books',this)"><i class="fas fa-book"></i> বই ব্যবস্থাপনা</a>
+        <a href="#" onclick="showDashPanel('dash-students',this)"><i class="fas fa-users"></i> শিক্ষার্থী ব্যবস্থাপনা</a>
+        <a href="#" onclick="showDashPanel('dash-issue',this)"><i class="fas fa-exchange-alt"></i> ইস্যু / রিটার্ন <span class="nav-badge">8</span></a>
+        <a href="#" onclick="showDashPanel('dash-fine',this)"><i class="fas fa-money-bill-wave"></i> ফাইন ব্যবস্থাপনা</a>
+        <div class="sidebar-section-label">রিপোর্ট</div>
+        <a href="#" onclick="showDashPanel('dash-reports',this)"><i class="fas fa-chart-bar"></i> পরিসংখ্যান ও রিপোর্ট</a>
+        <a href="#" onclick="showDashPanel('dash-notif',this)"><i class="fas fa-bell"></i> নোটিফিকেশন <span class="nav-badge">3</span></a>
+        <div class="sidebar-section-label">সেটিংস</div>
+        <a href="#" onclick="showDashPanel('dash-settings',this)"><i class="fas fa-cog"></i> সেটিংস</a>
+        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> লগআউট</a>
+      </nav>
+    </aside>
+    <main class="dash-content">
+
+      <!-- DASHBOARD HOME -->
+      <div id="dash-home" class="dash-panel active">
+        <div class="dash-top">
+          <h2>স্বাগতম, আহমেদ হাসান! 👋</h2>
+          <p>আজকের তারিখ: <span id="today-date"></span></p>
+        </div>
+        <div class="dash-stats">
+          <div class="dash-stat-card dsc-blue">
+            <div class="dsc-val">1,248</div>
+            <div class="dsc-lbl">মোট বই</div>
+            <i class="fas fa-book dsc-icon"></i>
+          </div>
+          <div class="dash-stat-card dsc-gold">
+            <div class="dsc-val">342</div>
+            <div class="dsc-lbl">মোট শিক্ষার্থী</div>
+            <i class="fas fa-users dsc-icon"></i>
+          </div>
+          <div class="dash-stat-card dsc-green">
+            <div class="dsc-val">262</div>
+            <div class="dsc-lbl">ইস্যু করা বই</div>
+            <i class="fas fa-hand-holding dsc-icon"></i>
+          </div>
+          <div class="dash-stat-card dsc-red">
+            <div class="dsc-val">৳ 4,850</div>
+            <div class="dsc-lbl">মোট ফাইন আদায়</div>
+            <i class="fas fa-money-bill dsc-icon"></i>
+          </div>
+          <div class="dash-stat-card dsc-purple">
+            <div class="dsc-val">18</div>
+            <div class="dsc-lbl">মুলতুবি অনুরোধ</div>
+            <i class="fas fa-clock dsc-icon"></i>
+          </div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <h3><i class="fas fa-chart-bar" style="margin-right:8px;color:var(--accent);"></i>মাসিক ইস্যু পরিসংখ্যান</h3>
+            <div class="bar-chart">
+              <div class="bar-group"><div class="bar" style="height:60%;background:var(--primary);"></div><div class="bar-val">48</div><div class="bar-label">জান</div></div>
+              <div class="bar-group"><div class="bar" style="height:75%;background:var(--primary);"></div><div class="bar-val">62</div><div class="bar-label">ফেব</div></div>
+              <div class="bar-group"><div class="bar" style="height:55%;background:var(--primary);"></div><div class="bar-val">44</div><div class="bar-label">মার</div></div>
+              <div class="bar-group"><div class="bar" style="height:88%;background:var(--accent);"></div><div class="bar-val">72</div><div class="bar-label">এপ্রি</div></div>
+              <div class="bar-group"><div class="bar" style="height:70%;background:var(--primary);"></div><div class="bar-val">58</div><div class="bar-label">মে</div></div>
+              <div class="bar-group"><div class="bar" style="height:45%;background:var(--primary);"></div><div class="bar-val">36</div><div class="bar-label">জুন</div></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3><i class="fas fa-circle" style="margin-right:8px;color:var(--accent);"></i>বই বিষয়শ্রেণী বিতরণ</h3>
+            <div class="donut-wrap">
+              <div class="donut" style="background:conic-gradient(var(--primary) 0% 35%,var(--accent) 35% 60%,var(--success) 60% 75%,var(--danger) 75% 90%,var(--text3) 90% 100%); width:100px;height:100px;border-radius:50%;"></div>
+              <div class="donut-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--primary);"></div>বিজ্ঞান — 35%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>সাহিত্য — 25%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--success);"></div>গণিত — 15%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--danger);"></div>ইতিহাস — 15%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--text3);"></div>অন্যান্য — 10%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header">
+            <h3><i class="fas fa-clock" style="margin-right:8px;color:var(--accent);"></i>সাম্প্রতিক ইস্যু</h3>
+            <button class="btn-sm btn-edit" onclick="showDashPanel('dash-issue',null)">সব দেখুন</button>
+          </div>
+          <table>
+            <thead><tr><th>শিক্ষার্থী</th><th>বইয়ের নাম</th><th>ইস্যু তারিখ</th><th>ফেরতের তারিখ</th><th>অবস্থা</th></tr></thead>
+            <tbody>
+              <tr><td>রাহিম উদ্দিন</td><td>পদার্থবিজ্ঞান (এইচএস)</td><td>১২ মে ২০২৫</td><td>২৬ মে ২০২৫</td><td><span class="badge badge-success">সক্রিয়</span></td></tr>
+              <tr><td>সুমাইয়া বেগম</td><td>বাংলা সাহিত্য</td><td>১০ মে ২০২৫</td><td>২৪ মে ২০২৫</td><td><span class="badge badge-warning">মেয়াদ শেষ</span></td></tr>
+              <tr><td>করিম হোসেন</td><td>অ্যালগরিদম</td><td>০৮ মে ২০২৫</td><td>২২ মে ২০২৫</td><td><span class="badge badge-success">সক্রিয়</span></td></tr>
+              <tr><td>নাসরিন আক্তার</td><td>রসায়ন বিজ্ঞান</td><td>০৫ মে ২০২৫</td><td>১৯ মে ২০২৫</td><td><span class="badge badge-danger">বিলম্বিত</span></td></tr>
+              <tr><td>তানভীর ইসলাম</td><td>ইংরেজি ব্যাকরণ</td><td>০১ মে ২০২৫</td><td>১৫ মে ২০২৫</td><td><span class="badge badge-primary">ফেরত দিয়েছে</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BOOK MANAGEMENT -->
+      <div id="dash-books" class="dash-panel">
+        <div class="dash-top">
+          <h2>বই ব্যবস্থাপনা</h2>
+          <p>বই যোগ করুন, সম্পাদনা করুন ও মুছুন</p>
+        </div>
+        <div class="table-card" style="margin-bottom:24px;">
+          <div class="table-card-header">
+            <h3>নতুন বই যোগ করুন</h3>
+          </div>
+          <div style="padding:24px;">
+            <div class="form-grid">
+              <div class="form-group"><label>বইয়ের শিরোনাম *</label><input type="text" placeholder="বইয়ের নাম লিখুন"></div>
+              <div class="form-group"><label>লেখকের নাম *</label><input type="text" placeholder="লেখকের নাম"></div>
+              <div class="form-group"><label>ISBN নম্বর</label><input type="text" placeholder="978-..."></div>
+              <div class="form-group"><label>বিষয়শ্রেণী *</label>
+                <select><option>বিষয় নির্বাচন করুন</option><option>বিজ্ঞান</option><option>গণিত</option><option>ইতিহাস</option><option>সাহিত্য</option><option>প্রযুক্তি</option><option>ইসলামিক</option></select>
+              </div>
+              <div class="form-group"><label>পরিমাণ</label><input type="number" placeholder="1" value="1" min="1"></div>
+              <div class="form-group"><label>র‍্যাক নম্বর</label><input type="text" placeholder="A-01"></div>
+              <div class="form-group full"><label>বিবরণ</label><textarea rows="3" placeholder="বইটি সম্পর্কে সংক্ষিপ্ত বিবরণ..."></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="showToast('বই সফলভাবে যোগ করা হয়েছে!','success')"><i class="fas fa-plus"></i> বই যোগ করুন</button>
+              <button class="btn-cancel-form">বাতিল</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header">
+            <h3>বইয়ের তালিকা</h3>
+            <input class="filter-input" style="width:200px;padding:7px 12px;" placeholder="খুঁজুন...">
+          </div>
+          <table>
+            <thead><tr><th>#</th><th>শিরোনাম</th><th>লেখক</th><th>বিষয়</th><th>পরিমাণ</th><th>উপলব্ধ</th><th>ক্রিয়া</th></tr></thead>
+            <tbody id="admin-books-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STUDENT MANAGEMENT -->
+      <div id="dash-students" class="dash-panel">
+        <div class="dash-top">
+          <h2>শিক্ষার্থী ব্যবস্থাপনা</h2>
+          <p>শিক্ষার্থী যোগ করুন ও পরিচালনা করুন</p>
+        </div>
+        <div class="table-card" style="margin-bottom:24px;">
+          <div class="table-card-header"><h3>নতুন শিক্ষার্থী যোগ করুন</h3></div>
+          <div style="padding:24px;">
+            <div class="form-grid">
+              <div class="form-group"><label>পূর্ণ নাম *</label><input type="text" placeholder="শিক্ষার্থীর নাম"></div>
+              <div class="form-group"><label>ইমেইল *</label><input type="email" placeholder="email@example.com"></div>
+              <div class="form-group"><label>শ্রেণী / বিভাগ</label><input type="text" placeholder="যেমন: দশম শ্রেণী, বিজ্ঞান"></div>
+              <div class="form-group"><label>ফোন নম্বর</label><input type="tel" placeholder="01XXXXXXXXX"></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="showToast('শিক্ষার্থী সফলভাবে যোগ করা হয়েছে!','success')"><i class="fas fa-user-plus"></i> শিক্ষার্থী যোগ করুন</button>
+              <button class="btn-cancel-form">বাতিল</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header"><h3>শিক্ষার্থীদের তালিকা</h3></div>
+          <table>
+            <thead><tr><th>আইডি</th><th>নাম</th><th>ইমেইল</th><th>শ্রেণী</th><th>ইস্যু করা</th><th>ফাইন</th><th>ক্রিয়া</th></tr></thead>
+            <tbody id="admin-students-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ISSUE & RETURN -->
+      <div id="dash-issue" class="dash-panel">
+        <div class="dash-top">
+          <h2>ইস্যু ও রিটার্ন ব্যবস্থাপনা</h2>
+          <p>বই ইস্যু করুন এবং ফেরত নিন</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+          <div class="table-card">
+            <div class="table-card-header"><h3><i class="fas fa-hand-holding-heart" style="color:var(--success);margin-right:8px;"></i>বই ইস্যু করুন</h3></div>
+            <div style="padding:24px;">
+              <div class="form-group" style="margin-bottom:14px;"><label>শিক্ষার্থী নির্বাচন *</label>
+                <select class="filter-select" style="width:100%;"><option>শিক্ষার্থী নির্বাচন করুন</option><option>রাহিম উদ্দিন (STU-001)</option><option>সুমাইয়া বেগম (STU-002)</option><option>করিম হোসেন (STU-003)</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:14px;"><label>বই নির্বাচন *</label>
+                <select class="filter-select" style="width:100%;"><option>বই নির্বাচন করুন</option><option>পদার্থবিজ্ঞান (ISBN: 978-001)</option><option>বাংলা সাহিত্য (ISBN: 978-002)</option><option>অ্যালগরিদম (ISBN: 978-003)</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:14px;"><label>ফেরতের তারিখ *</label><input type="date" class="filter-input" style="width:100%;"></div>
+              <button class="btn-save" style="width:100%;" onclick="showToast('বই সফলভাবে ইস্যু করা হয়েছে!','success')"><i class="fas fa-check"></i> ইস্যু নিশ্চিত করুন</button>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-card-header"><h3><i class="fas fa-undo" style="color:var(--accent);margin-right:8px;"></i>বই ফেরত নিন</h3></div>
+            <div style="padding:24px;">
+              <div class="form-group" style="margin-bottom:14px;"><label>ইস্যু আইডি / শিক্ষার্থী *</label>
+                <select class="filter-select" style="width:100%;"><option>ইস্যু রেকর্ড নির্বাচন করুন</option><option>ISS-001 — রাহিম: পদার্থবিজ্ঞান</option><option>ISS-002 — সুমাইয়া: বাংলা সাহিত্য</option><option>ISS-004 — নাসরিন: রসায়ন</option></select>
+              </div>
+              <div class="fine-calc">
+                <h3>ফাইন হিসাব</h3>
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                  <div class="form-group" style="flex:1;"><label>বিলম্বিত দিন</label><input type="number" id="late-days" placeholder="0" min="0" oninput="calcFine()"></div>
+                  <div class="form-group" style="flex:1;"><label>প্রতিদিন (৳)</label><input type="number" id="fine-per-day" value="5" min="1"></div>
+                </div>
+                <div class="fine-result" id="fine-result">
+                  <h4 id="fine-amount">মোট ফাইন: ৳ 0</h4>
+                  <p id="fine-desc">০ দিন × ৳৫ = ৳০</p>
+                </div>
+              </div>
+              <button class="btn-save" style="width:100%;background:var(--success);" onclick="showToast('বই সফলভাবে ফেরত নেওয়া হয়েছে!','success')"><i class="fas fa-check-double"></i> ফেরত নিশ্চিত করুন</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header"><h3>সক্রিয় ইস্যু তালিকা</h3></div>
+          <table>
+            <thead><tr><th>ইস্যু আইডি</th><th>শিক্ষার্থী</th><th>বই</th><th>ইস্যু তারিখ</th><th>ফেরতের তারিখ</th><th>অবস্থা</th><th>ক্রিয়া</th></tr></thead>
+            <tbody>
+              <tr><td>ISS-001</td><td>রাহিম উদ্দিন</td><td>পদার্থবিজ্ঞান</td><td>১২/০৫/২০২৫</td><td>২৬/০৫/২০২৫</td><td><span class="badge badge-success">সক্রিয়</span></td><td><button class="btn-sm btn-green">রিটার্ন</button></td></tr>
+              <tr><td>ISS-002</td><td>সুমাইয়া বেগম</td><td>বাংলা সাহিত্য</td><td>১০/০৫/২০২৫</td><td>২৪/০৫/২০২৫</td><td><span class="badge badge-warning">মেয়াদ শেষ</span></td><td><button class="btn-sm btn-green">রিটার্ন</button></td></tr>
+              <tr><td>ISS-003</td><td>করিম হোসেন</td><td>অ্যালগরিদম</td><td>০৮/০৫/২০২৫</td><td>২২/০৫/২০২৫</td><td><span class="badge badge-success">সক্রিয়</span></td><td><button class="btn-sm btn-green">রিটার্ন</button></td></tr>
+              <tr><td>ISS-004</td><td>নাসরিন আক্তার</td><td>রসায়ন বিজ্ঞান</td><td>০৫/০৫/২০২৫</td><td>১৯/০৫/২০২৫</td><td><span class="badge badge-danger">বিলম্বিত</span></td><td><button class="btn-sm btn-green">রিটার্ন</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FINE MANAGEMENT -->
+      <div id="dash-fine" class="dash-panel">
+        <div class="dash-top"><h2>ফাইন ব্যবস্থাপনা</h2><p>বিলম্বিত ফেরতের জন্য ফাইন হিসাব ও আদায়</p></div>
+        <div class="dash-stats" style="grid-template-columns:repeat(3,1fr);">
+          <div class="dash-stat-card dsc-red"><div class="dsc-val">৳ 4,850</div><div class="dsc-lbl">মোট ফাইন আদায়</div><i class="fas fa-coins dsc-icon"></i></div>
+          <div class="dash-stat-card dsc-gold"><div class="dsc-val">৳ 1,200</div><div class="dsc-lbl">মুলতুবি ফাইন</div><i class="fas fa-hourglass dsc-icon"></i></div>
+          <div class="dash-stat-card dsc-green"><div class="dsc-val">28</div><div class="dsc-lbl">ফাইন দেওয়া শিক্ষার্থী</div><i class="fas fa-user-check dsc-icon"></i></div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header"><h3>ফাইন রেকর্ড</h3></div>
+          <table>
+            <thead><tr><th>শিক্ষার্থী</th><th>বই</th><th>বিলম্বিত দিন</th><th>ফাইন পরিমাণ</th><th>তারিখ</th><th>অবস্থা</th><th>ক্রিয়া</th></tr></thead>
+            <tbody>
+              <tr><td>সুমাইয়া বেগম</td><td>বাংলা সাহিত্য</td><td>4 দিন</td><td>৳ 20</td><td>২৪/০৫/২০২৫</td><td><span class="badge badge-danger">মুলতুবি</span></td><td><button class="btn-sm btn-green" onclick="showToast('ফাইন আদায় সম্পন্ন!','success')">আদায়</button></td></tr>
+              <tr><td>নাসরিন আক্তার</td><td>রসায়ন বিজ্ঞান</td><td>7 দিন</td><td>৳ 35</td><td>১৯/০৫/২০২৫</td><td><span class="badge badge-danger">মুলতুবি</span></td><td><button class="btn-sm btn-green" onclick="showToast('ফাইন আদায় সম্পন্ন!','success')">আদায়</button></td></tr>
+              <tr><td>রাহিম উদ্দিন</td><td>পদার্থবিজ্ঞান</td><td>2 দিন</td><td>৳ 10</td><td>১০/০৫/২০২৫</td><td><span class="badge badge-success">পরিশোধিত</span></td><td><button class="btn-sm btn-edit">দেখুন</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div id="dash-reports" class="dash-panel">
+        <div class="dash-top"><h2>পরিসংখ্যান ও রিপোর্ট</h2><p>লাইব্রেরির সামগ্রিক কার্যক্রমের প্রতিবেদন</p></div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <h3>বার্ষিক ইস্যু পরিসংখ্যান</h3>
+            <div class="bar-chart">
+              <div class="bar-group"><div class="bar" style="height:50%;"></div><div class="bar-val">40</div><div class="bar-label">জান</div></div>
+              <div class="bar-group"><div class="bar" style="height:65%;"></div><div class="bar-val">52</div><div class="bar-label">ফেব</div></div>
+              <div class="bar-group"><div class="bar" style="height:80%;background:var(--accent);"></div><div class="bar-val">64</div><div class="bar-label">মার</div></div>
+              <div class="bar-group"><div class="bar" style="height:70%;"></div><div class="bar-val">56</div><div class="bar-label">এপ্রি</div></div>
+              <div class="bar-group"><div class="bar" style="height:90%;background:var(--success);"></div><div class="bar-val">72</div><div class="bar-label">মে</div></div>
+              <div class="bar-group"><div class="bar" style="height:55%;"></div><div class="bar-val">44</div><div class="bar-label">জুন</div></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>শিক্ষার্থী নিবন্ধন পরিসংখ্যান</h3>
+            <div class="bar-chart">
+              <div class="bar-group"><div class="bar" style="height:40%;background:#8e44ad;"></div><div class="bar-val">32</div><div class="bar-label">জান</div></div>
+              <div class="bar-group"><div class="bar" style="height:60%;background:#8e44ad;"></div><div class="bar-val">48</div><div class="bar-label">ফেব</div></div>
+              <div class="bar-group"><div class="bar" style="height:75%;background:#8e44ad;"></div><div class="bar-val">60</div><div class="bar-label">মার</div></div>
+              <div class="bar-group"><div class="bar" style="height:50%;background:#8e44ad;"></div><div class="bar-val">40</div><div class="bar-label">এপ্রি</div></div>
+              <div class="bar-group"><div class="bar" style="height:85%;background:var(--accent);"></div><div class="bar-val">68</div><div class="bar-label">মে</div></div>
+              <div class="bar-group"><div class="bar" style="height:45%;background:#8e44ad;"></div><div class="bar-val">36</div><div class="bar-label">জুন</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header">
+            <h3>সর্বাধিক পঠিত বইসমূহ</h3>
+            <button class="btn-sm btn-edit"><i class="fas fa-download"></i> PDF রপ্তানি</button>
+          </div>
+          <table>
+            <thead><tr><th>ক্রম</th><th>বইয়ের নাম</th><th>লেখক</th><th>বিষয়</th><th>ইস্যু সংখ্যা</th></tr></thead>
+            <tbody>
+              <tr><td>১</td><td>পদার্থবিজ্ঞান ১ম পত্র</td><td>ড. আমিন</td><td>বিজ্ঞান</td><td><strong>45</strong></td></tr>
+              <tr><td>২</td><td>বাংলা সাহিত্য সংকলন</td><td>আব্দুল্লাহ</td><td>সাহিত্য</td><td><strong>38</strong></td></tr>
+              <tr><td>৩</td><td>ডেটা স্ট্রাকচার</td><td>ড. করিম</td><td>প্রযুক্তি</td><td><strong>32</strong></td></tr>
+              <tr><td>৪</td><td>উচ্চতর গণিত</td><td>মাহমুদ</td><td>গণিত</td><td><strong>28</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div id="dash-notif" class="dash-panel">
+        <div class="dash-top"><h2>নোটিফিকেশন</h2><p>সকল সতর্কতা ও অনুস্মারক</p></div>
+        <div class="notif-list">
+          <div class="notif-item">
+            <div class="notif-icon" style="background:rgba(192,57,43,0.1);color:var(--danger);"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="notif-content"><h4>বিলম্বিত ফেরত সতর্কতা</h4><p>নাসরিন আক্তার ৭ দিন ধরে "রসায়ন বিজ্ঞান" বইটি ফেরত দেননি।</p></div>
+            <span class="notif-time">২ ঘণ্টা আগে</span>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background:rgba(243,156,18,0.1);color:var(--warning);"><i class="fas fa-clock"></i></div>
+            <div class="notif-content"><h4>ফেরতের সময় ঘনিয়ে আসছে</h4><p>সুমাইয়া বেগমের "বাংলা সাহিত্য" বইটির ফেরতের মেয়াদ কাল শেষ।</p></div>
+            <span class="notif-time">৫ ঘণ্টা আগে</span>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background:rgba(39,174,96,0.1);color:var(--success);"><i class="fas fa-book-open"></i></div>
+            <div class="notif-content"><h4>নতুন বই যোগ হয়েছে</h4><p>"কৃত্রিম বুদ্ধিমত্তা ও মেশিন লার্নিং" বইটি সংগ্রহে যোগ করা হয়েছে।</p></div>
+            <span class="notif-time">১ দিন আগে</span>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background:rgba(26,58,92,0.1);color:var(--primary);"><i class="fas fa-user-plus"></i></div>
+            <div class="notif-content"><h4>নতুন শিক্ষার্থী নিবন্ধন</h4><p>তানভীর ইসলাম নতুন শিক্ষার্থী হিসেবে নিবন্ধন করেছেন।</p></div>
+            <span class="notif-time">২ দিন আগে</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="dash-settings" class="dash-panel">
+        <div class="dash-top"><h2>সেটিংস</h2><p>সিস্টেম কনফিগারেশন</p></div>
+        <div class="table-card">
+          <div class="table-card-header"><h3>সাধারণ সেটিংস</h3></div>
+          <div style="padding:24px;">
+            <div class="form-grid">
+              <div class="form-group"><label>লাইব্রেরির নাম</label><input type="text" value="সরকারি উচ্চ বিদ্যালয় লাইব্রেরি"></div>
+              <div class="form-group"><label>প্রতিষ্ঠানের নাম</label><input type="text" value="সরকারি উচ্চ বিদ্যালয়, ঢাকা"></div>
+              <div class="form-group"><label>প্রতিদিন ফাইন (৳)</label><input type="number" value="5"></div>
+              <div class="form-group"><label>সর্বোচ্চ ইস্যু সীমা (প্রতি শিক্ষার্থী)</label><input type="number" value="3"></div>
+              <div class="form-group"><label>ইস্যুর মেয়াদ (দিন)</label><input type="number" value="14"></div>
+              <div class="form-group"><label>ইমেইল বিজ্ঞপ্তি</label>
+                <select><option>চালু</option><option>বন্ধ</option></select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="showToast('সেটিংস সংরক্ষিত হয়েছে!','success')"><i class="fas fa-save"></i> সংরক্ষণ করুন</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-card" style="margin-top:20px;">
+          <div class="table-card-header"><h3>পাসওয়ার্ড পরিবর্তন</h3></div>
+          <div style="padding:24px;">
+            <div class="form-grid" style="grid-template-columns:1fr;">
+              <div class="form-group"><label>বর্তমান পাসওয়ার্ড</label><input type="password" placeholder="••••••••"></div>
+              <div class="form-group"><label>নতুন পাসওয়ার্ড</label><input type="password" placeholder="••••••••"></div>
+              <div class="form-group"><label>পাসওয়ার্ড নিশ্চিত করুন</label><input type="password" placeholder="••••••••"></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="showToast('পাসওয়ার্ড পরিবর্তন হয়েছে!','success')">পাসওয়ার্ড আপডেট করুন</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== STUDENT DASHBOARD ===== -->
+<div id="student-dashboard" class="page">
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="student-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">র</div>
+          <div class="sidebar-user-info">
+            <h4>রাহিম উদ্দিন</h4>
+            <p>STU-001</p>
+            <span class="sidebar-role-badge">শিক্ষার্থী</span>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="active" onclick="showStudentPanel('stu-home',this)"><i class="fas fa-home"></i> আমার ড্যাশবোর্ড</a>
+        <a href="#" onclick="showStudentPanel('stu-books',this)"><i class="fas fa-book"></i> ইস্যু করা বইসমূহ</a>
+        <a href="#" onclick="showStudentPanel('stu-history',this)"><i class="fas fa-history"></i> বই ইতিহাস</a>
+        <a href="#" onclick="showStudentPanel('stu-fine',this)"><i class="fas fa-money-bill"></i> ফাইন বিবরণ</a>
+        <a href="#" onclick="showStudentPanel('stu-notif',this)"><i class="fas fa-bell"></i> নোটিফিকেশন</a>
+        <a href="#" onclick="showStudentPanel('stu-profile',this)"><i class="fas fa-user"></i> প্রোফাইল</a>
+        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> লগআউট</a>
+      </nav>
+    </aside>
+    <main class="dash-content">
+      <div id="stu-home" class="dash-panel active">
+        <div class="dash-top"><h2>স্বাগতম, রাহিম! 📚</h2><p>আপনার লাইব্রেরি কার্যক্রমের সারসংক্ষেপ</p></div>
+        <div class="dash-stats" style="grid-template-columns:repeat(3,1fr);">
+          <div class="dash-stat-card dsc-blue"><div class="dsc-val">2</div><div class="dsc-lbl">বর্তমানে ইস্যু করা</div><i class="fas fa-book dsc-icon"></i></div>
+          <div class="dash-stat-card dsc-green"><div class="dsc-val">14</div><div class="dsc-lbl">মোট পঠিত বই</div><i class="fas fa-check dsc-icon"></i></div>
+          <div class="dash-stat-card dsc-red"><div class="dsc-val">৳ 0</div><div class="dsc-lbl">মোট বকেয়া ফাইন</div><i class="fas fa-coins dsc-icon"></i></div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header"><h3>বর্তমানে ইস্যু করা বই</h3></div>
+          <table>
+            <thead><tr><th>বইয়ের নাম</th><th>লেখক</th><th>ইস্যু তারিখ</th><th>ফেরতের তারিখ</th><th>অবস্থা</th></tr></thead>
+            <tbody>
+              <tr><td>পদার্থবিজ্ঞান ১ম পত্র</td><td>ড. আমিন</td><td>১২/০৫/২০২৫</td><td>২৬/০৫/২০২৫</td><td><span class="badge badge-success">সময়মতো</span></td></tr>
+              <tr><td>অ্যালগরিদম ও ডেটা স্ট্রাকচার</td><td>ড. করিম</td><td>০৮/০৫/২০২৫</td><td>২২/০৫/২০২৫</td><td><span class="badge badge-success">সময়মতো</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="stu-books" class="dash-panel">
+        <div class="dash-top"><h2>ইস্যু করা বইসমূহ</h2></div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>বইয়ের নাম</th><th>লেখক</th><th>ইস্যু তারিখ</th><th>ফেরতের তারিখ</th><th>অবস্থা</th><th>ক্রিয়া</th></tr></thead>
+            <tbody>
+              <tr><td>পদার্থবিজ্ঞান</td><td>ড. আমিন</td><td>১২/০৫/২০২৫</td><td>২৬/০৫/২০২৫</td><td><span class="badge badge-success">সময়মতো</span></td><td><button class="btn-sm btn-green" onclick="showToast('ফেরত অনুরোধ পাঠানো হয়েছে!')">ফেরত অনুরোধ</button></td></tr>
+              <tr><td>অ্যালগরিদম</td><td>ড. করিম</td><td>০৮/০৫/২০২৫</td><td>২২/০৫/২০২৫</td><td><span class="badge badge-success">সময়মতো</span></td><td><button class="btn-sm btn-green" onclick="showToast('ফেরত অনুরোধ পাঠানো হয়েছে!')">ফেরত অনুরোধ</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="stu-history" class="dash-panel">
+        <div class="dash-top"><h2>বই পড়ার ইতিহাস</h2></div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>বইয়ের নাম</th><th>ইস্যু তারিখ</th><th>ফেরত তারিখ</th><th>ফাইন</th></tr></thead>
+            <tbody>
+              <tr><td>বাংলা ব্যাকরণ</td><td>১০/০৩/২০২৫</td><td>২৪/০৩/২০২৫</td><td>৳ 0</td></tr>
+              <tr><td>ইংরেজি সাহিত্য</td><td>০১/০২/২০২৫</td><td>১৫/০২/২০২৫</td><td>৳ 0</td></tr>
+              <tr><td>ইসলামের ইতিহাস</td><td>১৫/০১/২০২৫</td><td>০২/০২/২০২৫</td><td>৳ 10</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="stu-fine" class="dash-panel">
+        <div class="dash-top"><h2>ফাইন বিবরণ</h2></div>
+        <div class="dash-stat-card dsc-green" style="max-width:280px;margin-bottom:24px;"><div class="dsc-val">৳ 0</div><div class="dsc-lbl">বর্তমান বকেয়া ফাইন</div></div>
+        <div class="table-card">
+          <div class="table-card-header"><h3>ফাইন ইতিহাস</h3></div>
+          <table>
+            <thead><tr><th>বই</th><th>বিলম্বিত দিন</th><th>পরিমাণ</th><th>তারিখ</th><th>অবস্থা</th></tr></thead>
+            <tbody>
+              <tr><td>ইসলামের ইতিহাস</td><td>2 দিন</td><td>৳ 10</td><td>০২/০২/২০২৫</td><td><span class="badge badge-success">পরিশোধিত</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="stu-notif" class="dash-panel">
+        <div class="dash-top"><h2>নোটিফিকেশন</h2></div>
+        <div class="notif-list">
+          <div class="notif-item"><div class="notif-icon" style="background:rgba(243,156,18,0.1);color:var(--warning);"><i class="fas fa-clock"></i></div><div class="notif-content"><h4>ফেরতের অনুস্মারক</h4><p>"অ্যালগরিদম" বইটির ফেরতের মেয়াদ ৪ দিন পরে শেষ হবে।</p></div><span class="notif-time">আজ</span></div>
+          <div class="notif-item"><div class="notif-icon" style="background:rgba(39,174,96,0.1);color:var(--success);"><i class="fas fa-book"></i></div><div class="notif-content"><h4>বই সফলভাবে ইস্যু হয়েছে</h4><p>"পদার্থবিজ্ঞান ১ম পত্র" বইটি ইস্যু করা হয়েছে।</p></div><span class="notif-time">১২/০৫</span></div>
+        </div>
+      </div>
+      <div id="stu-profile" class="dash-panel">
+        <div class="dash-top"><h2>আমার প্রোফাইল</h2></div>
+        <div class="table-card">
+          <div style="padding:28px;">
+            <div class="form-grid">
+              <div class="form-group"><label>পূর্ণ নাম</label><input type="text" value="রাহিম উদ্দিন"></div>
+              <div class="form-group"><label>ইমেইল</label><input type="email" value="rahim@student.com"></div>
+              <div class="form-group"><label>ফোন</label><input type="tel" value="01712345678"></div>
+              <div class="form-group"><label>শ্রেণী</label><input type="text" value="দশম শ্রেণী, বিজ্ঞান"></div>
+            </div>
+            <div class="form-actions"><button class="btn-save" onclick="showToast('প্রোফাইল আপডেট হয়েছে!','success')">প্রোফাইল আপডেট করুন</button></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ===== ABOUT PAGE ===== -->
+<div id="about-page" class="page">
+  <div class="about-hero">
+    <h1>আমাদের সম্পর্কে</h1>
+    <p>গ্রন্থাগার হলো একটি আধুনিক ডিজিটাল লাইব্রেরি ম্যানেজমেন্ট সিস্টেম যা স্কুল, কলেজ এবং বিশ্ববিদ্যালয়ের লাইব্রেরির সমস্ত কার্যক্রম সহজ ও দক্ষভাবে পরিচালনার জন্য তৈরি।</p>
+  </div>
+  <div class="feature-list">
+    <div class="feature-item"><i class="fas fa-book-open"></i><div><h4>বই ব্যবস্থাপনা</h4><p>সহজে বই যোগ, সম্পাদনা এবং মুছুন। বিষয়শ্রেণী অনুযায়ী সংগঠিত করুন।</p></div></div>
+    <div class="feature-item"><i class="fas fa-exchange-alt"></i><div><h4>ইস্যু ও রিটার্ন</h4><p>দ্রুত বই ইস্যু করুন এবং ফেরত নিন। স্বয়ংক্রিয় তারিখ ট্র্যাকিং।</p></div></div>
+    <div class="feature-item"><i class="fas fa-money-bill-wave"></i><div><h4>ফাইন ব্যবস্থাপনা</h4><p>বিলম্বিত ফেরতের জন্য স্বয়ংক্রিয় ফাইন গণনা ও আদায়।</p></div></div>
+    <div class="feature-item"><i class="fas fa-chart-bar"></i><div><h4>পরিসংখ্যান ও রিপোর্ট</h4><p>বিস্তারিত রিপোর্ট এবং চার্টের মাধ্যমে লাইব্রেরির কার্যক্রম পর্যবেক্ষণ।</p></div></div>
+    <div class="feature-item"><i class="fas fa-bell"></i><div><h4>নোটিফিকেশন সিস্টেম</h4><p>স্বয়ংক্রিয় অনুস্মারক ও সতর্কতা বার্তা পাঠান।</p></div></div>
+    <div class="feature-item"><i class="fas fa-shield-alt"></i><div><h4>নিরাপদ লগইন</h4><p>Admin ও Student আলাদা অ্যাক্সেস সহ সুরক্ষিত প্রমাণীকরণ।</p></div></div>
+  </div>
+</div>
+
+<!-- ===== CONTACT PAGE ===== -->
+<div id="contact-page" class="page">
+  <div class="about-hero">
+    <h1>যোগাযোগ করুন</h1>
+    <p>যেকোনো প্রশ্ন বা সমস্যার জন্য আমাদের সাথে যোগাযোগ করুন।</p>
+  </div>
+  <div class="contact-form">
+    <div class="form-grid">
+      <div class="form-group"><label>আপনার নাম *</label><input type="text" placeholder="নাম লিখুন"></div>
+      <div class="form-group"><label>ইমেইল *</label><input type="email" placeholder="email@example.com"></div>
+      <div class="form-group"><label>বিষয় *</label><input type="text" placeholder="বার্তার বিষয়"></div>
+      <div class="form-group"><label>ফোন</label><input type="tel" placeholder="01XXXXXXXXX"></div>
+      <div class="form-group full"><label>বার্তা *</label><textarea rows="5" placeholder="আপনার বার্তা লিখুন..."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" onclick="showToast('বার্তা সফলভাবে পাঠানো হয়েছে!','success')"><i class="fas fa-paper-plane"></i> বার্তা পাঠান</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOGIN MODAL ===== -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('login-modal')"><i class="fas fa-times"></i></button>
+    <h2>স্বাগতম</h2>
+    <p>আপনার অ্যাকাউন্টে লগইন করুন</p>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('admin-tab',this)">Admin</button>
+      <button class="tab-btn" onclick="switchTab('student-tab',this)">শিক্ষার্থী</button>
+    </div>
+    <div id="admin-tab">
+      <div class="form-group" style="margin-bottom:14px;"><label>ইমেইল</label><input type="email" value="admin@library.com" placeholder="admin@library.com"></div>
+      <div class="form-group" style="margin-bottom:20px;"><label>পাসওয়ার্ড</label><input type="password" value="admin123" placeholder="••••••••"></div>
+      <button class="btn-save" style="width:100%;" onclick="loginAs('admin')"><i class="fas fa-tachometer-alt"></i> Admin হিসেবে লগইন</button>
+    </div>
+    <div id="student-tab" style="display:none;">
+      <div class="form-group" style="margin-bottom:14px;"><label>Student ID</label><input type="text" value="STU-001" placeholder="STU-001"></div>
+      <div class="form-group" style="margin-bottom:20px;"><label>পাসওয়ার্ড</label><input type="password" value="student123" placeholder="••••••••"></div>
+      <button class="btn-save" style="width:100%;background:var(--success);" onclick="loginAs('student')"><i class="fas fa-user-graduate"></i> শিক্ষার্থী হিসেবে লগইন</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg">বার্তা</span></div>
+
+<script>
+// ===== DATA =====
+const books = [
+  {id:1,title:'পদার্থবিজ্ঞান ১ম পত্র',author:'ড. আব্দুল আমিন',cat:'বিজ্ঞান',isbn:'978-001',qty:5,avail:3,cover:'c1',emoji:'⚛️'},
+  {id:2,title:'বাংলা সাহিত্য সংকলন',author:'অধ্যাপক আব্দুল্লাহ',cat:'সাহিত্য',isbn:'978-002',qty:4,avail:2,cover:'c2',emoji:'📖'},
+  {id:3,title:'অ্যালগরিদম ও ডেটা স্ট্রাকচার',author:'ড. করিম হোসেন',cat:'প্রযুক্তি',isbn:'978-003',qty:6,avail:4,cover:'c3',emoji:'💻'},
+  {id:4,title:'বাংলাদেশের ইতিহাস',author:'ড. মনিরুজ্জামান',cat:'ইতিহাস',isbn:'978-004',qty:3,avail:1,cover:'c4',emoji:'📜'},
+  {id:5,title:'উচ্চতর গণিত',author:'মাহমুদ আলী',cat:'গণিত',isbn:'978-005',qty:8,avail:5,cover:'c5',emoji:'📐'},
+  {id:6,title:'রসায়ন বিজ্ঞান',author:'ড. শিরিন আক্তার',cat:'বিজ্ঞান',isbn:'978-006',qty:4,avail:0,cover:'c6',emoji:'🧪'},
+  {id:7,title:'ইসলামের ইতিহাস ও সংস্কৃতি',author:'অধ্যাপক নুরুল হুদা',cat:'ইসলামিক',isbn:'978-007',qty:5,avail:3,cover:'c7',emoji:'📿'},
+  {id:8,title:'ইংরেজি সাহিত্য',author:'Prof. John Smith',cat:'সাহিত্য',isbn:'978-008',qty:3,avail:2,cover:'c8',emoji:'📝'},
+];
+
+const students = [
+  {id:'STU-001',name:'রাহিম উদ্দিন',email:'rahim@s.com',cls:'দশম, বিজ্ঞান',issued:2,fine:0},
+  {id:'STU-002',name:'সুমাইয়া বেগম',email:'sumaiya@s.com',cls:'নবম, মানবিক',issued:1,fine:20},
+  {id:'STU-003',name:'করিম হোসেন',email:'karim@s.com',cls:'একাদশ, বিজ্ঞান',issued:1,fine:0},
+  {id:'STU-004',name:'নাসরিন আক্তার',email:'nasrin@s.com',cls:'দ্বাদশ, বাণিজ্য',issued:1,fine:35},
+  {id:'STU-005',name:'তানভীর ইসলাম',email:'tanvir@s.com',cls:'দশম, বিজ্ঞান',issued:0,fine:0},
+];
+
+// ===== RENDER BOOKS =====
+function renderBooks(container, booksArr) {
+  const el = document.getElementById(container);
+  if (!el) return;
+  el.innerHTML = booksArr.map(b => `
+    <div class="book-card" onclick="showToast('\"${b.title}\" বই নির্বাচিত হয়েছে!')">
+      <div class="book-cover ${b.cover}">
+        <span style="font-size:2.5rem;">${b.emoji}</span>
+        <span class="availability ${b.avail>0?'avail-yes':'avail-no'}">${b.avail>0?'উপলব্ধ':'অনুপলব্ধ'}</span>
+      </div>
+      <div class="book-info">
+        <h4>${b.title}</h4>
+        <p class="author">${b.author}</p>
+        <span class="category-tag">${b.cat}</span>
+        <button class="btn-issue" ${b.avail===0?'disabled':''} onclick="event.stopPropagation();issueBook('${b.title}')">
+          ${b.avail>0?'<i class=\'fas fa-hand-holding-heart\'></i> ইস্যু করুন':'অনুপলব্ধ'}
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function issueBook(title) {
+  openModal('login-modal');
+  showToast(`"${title}" ইস্যু করতে লগইন করুন`);
+}
+
+// ===== FILTER BOOKS =====
+function filterBooks() {
+  const q = document.getElementById('book-search').value.toLowerCase();
+  const cat = document.getElementById('cat-filter').value;
+  const avail = document.getElementById('avail-filter').value;
+  const filtered = books.filter(b => {
+    const matchQ = !q || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q);
+    const matchCat = !cat || b.cat === cat;
+    const matchAvail = !avail || (avail==='available' ? b.avail>0 : b.avail===0);
+    return matchQ && matchCat && matchAvail;
+  });
+  renderBooks('all-books-grid', filtered);
+}
+
+// ===== ADMIN TABLE =====
+function renderAdminBooks() {
+  const tb = document.getElementById('admin-books-table');
+  if (!tb) return;
+  tb.innerHTML = books.map((b,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td><strong>${b.title}</strong></td>
+      <td>${b.author}</td>
+      <td><span class="badge badge-primary">${b.cat}</span></td>
+      <td>${b.qty}</td>
+      <td><span class="badge ${b.avail>0?'badge-success':'badge-danger'}">${b.avail}</span></td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn-sm btn-edit" onclick="showToast('সম্পাদনা মোড খোলা হয়েছে')"><i class="fas fa-edit"></i></button>
+        <button class="btn-sm btn-delete" onclick="showToast('বই মুছে ফেলা হয়েছে!','error')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderAdminStudents() {
+  const tb = document.getElementById('admin-students-table');
+  if (!tb) return;
+  tb.innerHTML = students.map(s => `
+    <tr>
+      <td><strong>${s.id}</strong></td>
+      <td>${s.name}</td>
+      <td>${s.email}</td>
+      <td>${s.cls}</td>
+      <td><span class="badge badge-primary">${s.issued}</span></td>
+      <td><span class="badge ${s.fine>0?'badge-danger':'badge-success'}">৳${s.fine}</span></td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn-sm btn-edit" onclick="showToast('শিক্ষার্থীর তথ্য দেখা হচ্ছে')"><i class="fas fa-eye"></i></button>
+        <button class="btn-sm btn-delete" onclick="showToast('শিক্ষার্থী মুছে ফেলা হয়েছে!','error')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===== PAGES =====
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+  if (id==='books-page') renderBooks('all-books-grid', books);
+}
+
+function setActive(el) {
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+}
+function setActiveByName(name) {
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    if(a.textContent.trim()===name) a.classList.add('active');
+    else a.classList.remove('active');
+  });
+}
+
+// ===== DASHBOARD PANELS =====
+function showDashPanel(id, el) {
+  document.querySelectorAll('#admin-dashboard .dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(el) { document.querySelectorAll('#sidebar a').forEach(a => a.classList.remove('active')); el.classList.add('active'); }
+  if(id==='dash-books') renderAdminBooks();
+  if(id==='dash-students') renderAdminStudents();
+}
+
+function showStudentPanel(id, el) {
+  document.querySelectorAll('#student-dashboard .dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(el) { document.querySelectorAll('#student-sidebar a').forEach(a => a.classList.remove('active')); el.classList.add('active'); }
+}
+
+// ===== MODAL =====
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
+});
+
+// ===== TABS =====
+function switchTab(id, btn) {
+  document.querySelectorAll('.modal .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['admin-tab','student-tab'].forEach(t => {
+    document.getElementById(t).style.display = t===id ? 'block' : 'none';
+  });
+}
+
+// ===== LOGIN =====
+function loginAs(role) {
+  closeModal('login-modal');
+  if(role==='admin') {
+    showPage('admin-dashboard');
+    renderAdminBooks(); renderAdminStudents();
+    showToast('Admin হিসেবে লগইন সফল!','success');
+  } else {
+    showPage('student-dashboard');
+    showToast('শিক্ষার্থী হিসেবে লগইন সফল!','success');
+  }
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+}
+
+function logout() {
+  showPage('home');
+  showToast('লগআউট সফল হয়েছে!');
+  document.querySelector('.nav-links a').classList.add('active');
+}
+
+// ===== FINE CALC =====
+function calcFine() {
+  const days = parseInt(document.getElementById('late-days').value) || 0;
+  const perDay = parseInt(document.getElementById('fine-per-day').value) || 5;
+  const total = days * perDay;
+  const res = document.getElementById('fine-result');
+  document.getElementById('fine-amount').textContent = `মোট ফাইন: ৳ ${total}`;
+  document.getElementById('fine-desc').textContent = `${days} দিন × ৳${perDay} = ৳${total}`;
+  res.classList.toggle('show', days > 0);
+}
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  const m = document.getElementById('toast-msg');
+  m.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3000);
+}
+
+// ===== THEME =====
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-icon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+}
+
+// ===== SIDEBAR MOBILE =====
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('student-sidebar')?.classList.toggle('open');
+}
+
+// ===== DATE =====
+const today = document.getElementById('today-date');
+if(today) {
+  const d = new Date();
+  today.textContent = d.toLocaleDateString('bn-BD',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ===== INIT =====
+renderBooks('featured-books', books);
+</script>
+</body>
+</html>
